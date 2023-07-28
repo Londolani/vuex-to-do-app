@@ -1,41 +1,70 @@
-import { createApp } from 'vue'
 import { createStore } from 'vuex'
-import App from './App.vue'
 
-// Create a new store instance.
 const store = createStore({
   state () {
     return {
       count: 0,
       taskList:[
-        {id: 1,name: 'buy groceries'},
-        {id:2,name:'wash the car'},
-        {id:3,name:'play video games'}
+        {id: 0,name: 'buy groceries',done:false, description:' buying groceries for the month that will accomodate the whole house'},
+        {id:1,name:'wash the car',done:false,description:'washing the car so that it stays clean and attractive'},
+        {id:2,name:'play video games',done:false,description:'playing my favorite video games so i enjoy my free time'}
       ]
     }
   },
   mutations: {
-    add(state,newTask) {
+    addTask(state,newTask) {
       state.taskList.push(newTask)
     },
-    remove(state,taskId){
-        state.taskList.filter((task)=> task.id !== taskId)
-    }
+    removeTask(state,taskId){
+      state.taskList = state.taskList.filter((task)=> task.id !== taskId)
+    },
+    editTask(state,{taskId,updatedName}){
+      const taskToUpdate = state.taskList.find((task) => task.id === taskId);
+      if (taskToUpdate) {
+        taskToUpdate.name = updatedName;
+      }
+      /*state.taskList.map( (task) => task.id !== taskId )//? state.taskList:{taskId,updatedName} )
+      state.taskList.push(updatedName)
+      /*
+      state.taskList = state.taskList.filter((task)=> task.id !== taskId)
+      state.taskList.push(updatedName)
+      /*if (taskToUpdate) {
+        //taskToUpdate.name = updatedName;
+        state.taskList.push(updatedName)
+      }*/
+    },
+    markTaskAsDone(state, taskId) {
+        const taskToUpdate = state.taskList.find((task) => task.id === taskId);
+        if (taskToUpdate) {
+          taskToUpdate.done = !taskToUpdate.done;
+        }
+    }    
   },
   actions:{
-    add({commit},newTask){
-        commit('add',newTask)
+    addTask({commit},newTask){
+        commit('addTask',newTask)
     },
-    remove({commit},taskId){
-        commit('remove',taskId)
+    removeTask({commit},taskId){
+        commit('removeTask',taskId)
+    },
+    editTask({commit},{taskId,updatedName}){
+        commit('editTask',{taskId,updatedName})
+    },
+    markAsDone({ commit }, taskId) {
+        commit('markTaskAsDone', taskId);
     }
   },
   getters:{
     getTaskList: (state) => state.taskList,
+    getTaskListById: (state) =>  (id) => {
+        const task = state.taskList[id] ? state.taskList[id] : null;
+        return task
+    },
   },
 })
 
-const app = createApp({App})
+export default store;
 
-// Install the store instance as a plugin
-app.use(store)
+//const app = createApp(App)
+
+//app.use(store)

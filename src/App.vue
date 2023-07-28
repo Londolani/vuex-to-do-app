@@ -1,22 +1,22 @@
 <template>
   <div>
-    <h2>To do List</h2>
-    <add-task></add-task>
-    <list-task></list-task>
+    <h1>To do List</h1>
+    <main>
+      <router-view></router-view>
+    </main>
   </div>
 </template>
 
 <script>
-import ListTask from './components/ListTask.vue'
-import AddTask from './components/AddTask.vue'
+//import ListTask from './components/ListTask.vue'
+//import AddTask from './components/AddTask.vue'
 
 export default {
   name: 'App',
   components: {
-    ListTask,
-    AddTask
+    //ListTask,
+    //AddTask
   }, 
-  
 }
 </script>
 

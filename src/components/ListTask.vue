@@ -1,49 +1,66 @@
 <template>
     <div>
-    <div class="card">
-      <div class="card-header">
-        <strike v-if="strike"><p>{{ name }}</p></strike>
-        <p v-if="!strike">{{ name }}</p>
+        <router-link to="/add">
+            <button class="add-button" @click="showForm">Add new Task</button>
+        </router-link>
+    <div class="card" v-for="task in taskList" :key="task.id">
+      <div class="card-header" >
+        <router-link :to="'/description/' + task.id">
+            <strike v-if="task.done"><p>{{ task.name }}</p></strike>
+            <p v-if="!task.done">{{ task.name }}</p>
+        </router-link>
         <div class="buttons">
-            <button class="done-button" @click="updateStatus"> {{ strike ? 'Undo':'Done'}}</button>
-            <button class="edit-button" @click="showForm">Edit</button>
-            <button class="remove-button" @click="removeTask(id)">Remove</button>
+            <button class="done-button" @click="markAsDone(task.id)"> {{ task.done ? 'Undo':'Done'}}</button>
+            <router-link :to="'/edit/'+ task.id">
+                <button class="edit-button">Edit</button>
+            </router-link>
+            <button class="remove-button" @click="remove(task.id)">Remove</button>
         </div>
+        <!--<form v-if="edit" class="task-form" @submit.prevent="editTaskName(task.id)">
+            <input name="task" type="text" v-model="input">
+            <button  type="submit">Update Task</button>
+        </form>-->
       </div>
     </div>
-    <form v-if="edit" class="task-form" @submit.prevent="editTask">
-        <input name="task" type="text" v-model="input">
-        <button  type="submit">Update Task</button>
-    </form>
+    <router-view></router-view>
     </div>
   </template>
   
   <script>
+  import { mapGetters, mapActions } from 'vuex';
+
   export default {
     props: ['name', 'id'],
     data(){
         return{
-            strike:false,
             input: this.name,
             edit:false
         }
     },
+    computed:{
+        ...mapGetters(['getTaskList','count']),
+        taskList() {
+            return this.getTaskList; 
+        }
+    },
     methods: {
-      editTask() {
+        ...mapActions(['removeTask','editTask','markAsDone']),
+        /*editTaskName(taskId) {
+            this.editTask({ taskId:taskId, updatedName: this.input }); 
+            this.edit = !this.edit;
+            this.input='';
+        },*/remove(taskId){
+            this.removeTask(taskId)
+        },
+      /*editTask() {
         //this.input = this.name;
         this.$emit('newId',this.taskId);
         this.edit = !this.edit;
         this.newInput();
         this.input='';
-      },
+      },*/
       newInput(){
         this.$emit('newInput', this.input);
-      },
-      removeTask(id) {
-        this.$emit('removeTask', id);
-      },
-      updateStatus(){
-        this.strike = !this.strike;
       },
       showForm(){
         this.edit = !this.edit;
@@ -71,6 +88,7 @@
     font-size: 18px;
     margin: 0;
     padding: 10px;
+    text-decoration: none;
   }
   
   .buttons {
@@ -99,6 +117,16 @@
   .done-button {
     background-color: black;
     color: #fff;
+  }
+
+  .add-button{
+    background-color: green;
+    color: #fff;
+    padding: 8px 16px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
   }
   .task-form {
     display: flex;
